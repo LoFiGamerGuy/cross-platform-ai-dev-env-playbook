@@ -1,0 +1,75 @@
+# mise.toml — runtime version pinning per project
+# Place at the root of any project that uses mise.
+#
+# Reference config from the cross-platform-ai-dev-env-playbook.
+
+[tools]
+# Pin language versions
+python = "3.12"
+node = "22"
+# go = "1.23"           # uncomment if used
+# ruby = "3.3"          # uncomment if used
+# java = "21"           # uncomment if used
+
+# Pin specific patch versions when stability matters
+# python = "3.12.7"
+
+# Use latest of a major version
+# node = "22"
+
+# Use a specific build (e.g., for performance experiments)
+# python = "3.12.7-async"
+
+[env]
+# Per-project environment variables
+# These activate when you cd into the project directory.
+# Don't put secrets here; use .env (gitignored) for those.
+
+PYTHONDONTWRITEBYTECODE = "1"   # don't litter __pycache__
+PYTHONUNBUFFERED = "1"           # better logging in containers
+NODE_NO_WARNINGS = "1"
+
+# Project-specific paths
+# PROJECT_ROOT = "{{ config_root }}"
+
+[tasks]
+# Optional: define tasks that mise can run
+# Replaces simple Makefile targets
+
+[tasks.test]
+description = "Run the test suite"
+run = "pytest tests/"
+
+[tasks.lint]
+description = "Run all linters"
+run = """
+ruff check .
+mypy src/
+"""
+
+[tasks.format]
+description = "Auto-format code"
+run = """
+ruff format .
+"""
+
+[tasks.dev]
+description = "Run dev server"
+run = "python -m my_app.dev_server"
+
+[tasks.setup]
+description = "First-time setup"
+run = """
+mise install
+uv venv
+uv sync
+"""
+
+# Settings (optional)
+[settings]
+# Disable mise's idiom checks if you find them noisy
+# experimental = false
+
+# Use shims mode (works everywhere; slightly slower than activate mode)
+# Recommended for Git Bash on Windows; optional elsewhere.
+# disable_default_shorthands = false
