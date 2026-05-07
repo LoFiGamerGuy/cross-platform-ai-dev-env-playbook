@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en" data-register="genkan">
+<head>
+<meta charset="utf-8">
+<title>Cross-Platform AI Dev Env Playbook — concrete how-to for agentic dev</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="A concrete, opinionated playbook for setting up a development environment that works on Mac, Linux, Windows+WSL, and cloud VMs — and is productive for agentic AI engineering specifically.">
+<link rel="stylesheet" href="css/genkan.css">
+<!-- Cloudflare Web Analytics -->
+<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "7fcba264810c47d0b53cdf09f5becdcc"}'></script>
+<style>
+  .fo-masthead { border-top: 3px solid var(--fg); border-bottom: 1px solid var(--rule); padding: var(--space-5) 0; }
+  .fo-masthead__inner { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-5); }
+  .fo-masthead__brand { font-family: var(--font-display); font-style: italic; font-weight: 500; font-size: var(--fs-md); color: var(--fg); }
+  .fo-masthead__brand .glyph { font-family: var(--font-mono); font-style: normal; font-size: var(--fs-2xs); letter-spacing: var(--tracking-caps); color: var(--accent); border: 1px solid var(--accent); padding: 2px 6px; margin-right: var(--space-3); }
+  .fo-masthead__meta { font-family: var(--font-mono); font-size: var(--fs-2xs); letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--fg-3); }
+  .fo-masthead__meta b { color: var(--fg); font-weight: 400; }
+  .fo-title-block { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: var(--space-9); align-items: end; padding: var(--space-9) 0 var(--space-8); border-bottom: 1px solid var(--rule); }
+  .fo-title { font-family: var(--font-display); font-weight: 400; font-size: clamp(48px, 7vw, 88px); line-height: 0.98; letter-spacing: -0.025em; color: var(--fg); }
+  .fo-title em { font-style: italic; font-weight: 300; color: var(--accent-deep); }
+  .fo-title-block__lede { font-family: var(--font-display); font-style: italic; font-size: var(--fs-lg); line-height: 1.45; color: var(--fg-2); border-left: 1px solid var(--accent); padding-left: var(--space-5); }
+  @media (max-width: 880px) { .fo-title-block { grid-template-columns: 1fr; } }
+  .fo-shelf { padding: var(--space-9) 0 var(--space-7); border-bottom: 1px solid var(--rule); }
+  .fo-shelf__head { display: grid; grid-template-columns: 80px 1fr; gap: var(--space-6); align-items: baseline; margin-bottom: var(--space-6); padding-bottom: var(--space-5); border-bottom: 1px solid var(--fg); }
+  .fo-shelf__num { font-family: var(--font-mono); font-size: var(--fs-2xs); letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--accent); }
+  .fo-shelf__title { font-family: var(--font-display); font-weight: 400; font-size: var(--fs-2xl); line-height: 1.05; letter-spacing: var(--tracking-tight); color: var(--fg); }
+  .fo-shelf__title em { font-style: italic; font-weight: 300; color: var(--fg-2); }
+  .fo-shelf__intro { font-family: var(--font-display); font-style: italic; font-size: var(--fs-md); line-height: 1.6; color: var(--fg-2); max-width: 56ch; margin-bottom: var(--space-6); }
+  .fo-entry { display: grid; grid-template-columns: 60px minmax(0, 3fr) minmax(0, 5fr) auto; gap: var(--space-6); padding: var(--space-6) 0; border-bottom: 1px solid var(--rule-faint); transition: background var(--dur-fast) var(--ease); }
+  .fo-entry:hover { background: var(--bg-2); }
+  .fo-entry__num { font-family: var(--font-mono); font-size: var(--fs-2xs); letter-spacing: var(--tracking-caps); color: var(--accent); }
+  .fo-entry__title { font-family: var(--font-display); font-style: italic; font-weight: 400; font-size: var(--fs-xl); line-height: 1.15; color: var(--fg); margin-bottom: var(--space-2); }
+  .fo-entry__title a { color: inherit; text-decoration: none; border-bottom: 1px solid transparent; }
+  .fo-entry__title a:hover { border-bottom-color: var(--accent); }
+  .fo-entry__bibl { font-family: var(--font-mono); font-size: var(--fs-2xs); letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--fg-3); }
+  .fo-entry__note { font-family: var(--font-body); font-size: var(--fs-sm); line-height: 1.65; color: var(--fg-2); text-wrap: pretty; max-width: 56ch; }
+  .fo-entry__meta { text-align: right; font-family: var(--font-mono); font-size: var(--fs-2xs); letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--fg-3); line-height: 1.7; }
+  .fo-entry__meta .tag { border: 1px solid var(--rule); padding: 2px 6px; margin-bottom: var(--space-2); display: inline-block; color: var(--fg-2); }
+  .fo-entry__meta .tag--key { color: var(--accent); border-color: var(--accent); }
+  @media (max-width: 880px) { .fo-entry { grid-template-columns: 40px 1fr; } .fo-entry__note, .fo-entry__meta { grid-column: 2; } .fo-entry__meta { text-align: left; } }
+  .fo-feature { background: var(--bg-2); padding: var(--space-8); margin: var(--space-7) 0; border-top: 1px solid var(--accent); border-bottom: 1px solid var(--accent); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: var(--space-7); align-items: start; }
+  .fo-feature__cap { font-family: var(--font-mono); font-size: var(--fs-2xs); letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--accent); margin-bottom: var(--space-4); }
+  .fo-feature__title { font-family: var(--font-display); font-style: italic; font-weight: 400; font-size: var(--fs-3xl); line-height: 0.98; letter-spacing: -0.02em; color: var(--fg); margin-bottom: var(--space-4); }
+  .fo-feature__pull { font-family: var(--font-display); font-style: italic; font-size: var(--fs-lg); line-height: 1.4; color: var(--fg); border-left: 2px solid var(--accent); padding-left: var(--space-5); margin-bottom: var(--space-5); }
+  .fo-feature__note { font-size: var(--fs-sm); line-height: 1.7; color: var(--fg-2); }
+  .fo-feature__note a { color: var(--fg); border-bottom: 1px solid var(--accent); text-decoration: none; }
+  @media (max-width: 880px) { .fo-feature { grid-template-columns: 1fr; padding: var(--space-6); } }
+  .fo-colophon { border-top: 3px solid var(--fg); padding: var(--space-7) 0; display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-7); margin-top: var(--space-8); }
+  .fo-colophon h5 { font-family: var(--font-mono); font-weight: 400; font-size: var(--fs-2xs); letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--accent); margin-bottom: var(--space-3); }
+  .fo-colophon p { font-size: var(--fs-sm); line-height: 1.65; color: var(--fg-2); }
+  .fo-colophon a { color: var(--fg); border-bottom: 1px solid var(--accent); text-decoration: none; }
+  .fo-colophon ul li { font-family: var(--font-mono); font-size: var(--fs-2xs); letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--fg-2); line-height: 1.9; border-bottom: 1px dotted var(--rule); padding: 4px 0; display: flex; justify-content: space-between; }
+  .fo-colophon ul li b { color: var(--fg); font-weight: 400; }
+  @media (max-width: 880px) { .fo-colophon { grid-template-columns: 1fr; } }
+  .fo-feedback { border-top: 1px solid var(--rule); padding: var(--space-9) 0 var(--space-7); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: var(--space-7); }
+  .fo-feedback__head h3 { font-family: var(--font-display); font-style: italic; font-weight: 400; font-size: var(--fs-2xl); line-height: 1.05; letter-spacing: var(--tracking-tight); color: var(--fg); margin-bottom: var(--space-4); }
+  .fo-feedback__head .fo-feedback__cap { font-family: var(--font-mono); font-size: var(--fs-2xs); letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--accent); margin-bottom: var(--space-3); }
+  .fo-feedback__head p { font-size: var(--fs-sm); line-height: 1.65; color: var(--fg-2); margin-bottom: var(--space-3); }
+  .fo-feedback__head a { color: var(--fg); border-bottom: 1px solid var(--accent); text-decoration: none; }
+  .fo-feedback form { display: flex; flex-direction: column; gap: var(--space-4); }
+  .fo-feedback label { font-family: var(--font-mono); font-size: var(--fs-2xs); letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--fg-3); display: block; margin-bottom: var(--space-2); }
+  .fo-feedback input, .fo-feedback textarea { font-family: var(--font-body); font-size: var(--fs-sm); color: var(--fg); background: var(--bg); border: 1px solid var(--rule); padding: var(--space-3) var(--space-4); width: 100%; box-sizing: border-box; transition: border-color var(--dur-fast) var(--ease); }
+  .fo-feedback input:focus, .fo-feedback textarea:focus { outline: none; border-color: var(--accent); }
+  .fo-feedback textarea { resize: vertical; min-height: 100px; font-family: var(--font-body); line-height: 1.55; }
+  .fo-feedback button { font-family: var(--font-mono); font-size: var(--fs-2xs); letter-spacing: var(--tracking-caps); text-transform: uppercase; background: var(--fg); color: var(--bg); border: none; padding: var(--space-3) var(--space-5); cursor: pointer; align-self: flex-start; transition: background var(--dur-fast) var(--ease); }
+  .fo-feedback button:hover { background: var(--accent-deep); }
+  @media (max-width: 880px) { .fo-feedback { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="gk-shell">
+
+  <header class="gk-container fo-masthead">
+    <div class="fo-masthead__inner">
+      <div class="fo-masthead__brand"><span class="glyph">境</span>Cross-Platform AI Dev Env Playbook · the catalogue</div>
+      <div class="fo-masthead__meta"><b>v1.0</b> · <b>May 2026</b> · <b>CC BY 4.0</b></div>
+    </div>
+  </header>
+
+  <main class="gk-container">
+
+    <section class="fo-title-block">
+      <h1 class="fo-title">Same setup. <em>Same agent behavior.</em> Every machine.</h1>
+      <p class="fo-title-block__lede">
+        A concrete, opinionated playbook for setting up a dev environment that works on Mac, Linux, Windows+WSL, and cloud VMs — and is productive for agentic AI engineering specifically. Not "favorite tools"; the discipline of parity.
+      </p>
+    </section>
+
+    <section class="fo-feature">
+      <div>
+        <div class="fo-feature__cap">— start here</div>
+        <h2 class="fo-feature__title">Pick your platform first.</h2>
+        <p class="fo-feature__pull">"You're not choosing forever. But pick one as primary — the parity discipline assumes you have a primary that you treat as the source of truth."</p>
+      </div>
+      <div>
+        <p class="fo-feature__note">Read <a href="https://github.com/LoFiGamerGuy/cross-platform-ai-dev-env-playbook/blob/main/playbook/01-pick-your-platform.md"><b>chapter 01</b></a> to decide your primary OS. Then either run through <a href="https://github.com/LoFiGamerGuy/cross-platform-ai-dev-env-playbook/blob/main/checklists/fresh-machine-setup.md"><b>the fresh-machine setup checklist</b></a> for the bulk of the install, or read the playbook chapters in order. The dotfiles pattern in <a href="https://github.com/LoFiGamerGuy/cross-platform-ai-dev-env-playbook/blob/main/playbook/08-dotfiles-pattern.md"><b>chapter 08</b></a> is the highest-leverage move once the basics are working.</p>
+      </div>
+    </section>
+
+    <!-- Playbook chapters -->
+    <section class="fo-shelf">
+      <div class="fo-shelf__head">
+        <div class="fo-shelf__num">— I</div>
+        <h3 class="fo-shelf__title">Playbook <em>— nine focused chapters</em></h3>
+      </div>
+      <p class="fo-shelf__intro">Each chapter is opinionated, concrete, and full of copy-pasteable commands. Read in order for adoption; skim by topic for reference.</p>
+
+      <div class="fo-entry">
+        <div class="fo-entry__num">01</div>
+        <div>
+          <div class="fo-entry__title"><a href="https://github.com/LoFiGamerGuy/cross-platform-ai-dev-env-playbook/blob/main/playbook/01-pick-your-platform.md">Pick Your Platform</a></div>
+          <div class="fo-entry__bibl">Mac · Linux · Windows+WSL2</div>
+        </div>
+        <div class="fo-entry__note">The three viable choices, when each is right, what NOT to do (dual-boot, custom distros, three OSes). Recommendations in order.</div>
+        <div class="fo-entry__meta"><span class="tag tag--key">Decision</span></div>
+      </div>
+      <div class="fo-entry">
+        <div class="fo-entry__num">02</div>
+        <div>
+          <div class="fo-entry__title"><a href="https://github.com/LoFiGamerGuy/cross-platform-ai-dev-env-playbook/blob/main/playbook/02-shell-prompt-multiplexer.md">Shell, Prompt, Multiplexer</a></div>
+          <div class="fo-entry__bibl">bash/zsh · Starship · tmux/zellij</div>
+        </div>
+        <div class="fo-entry__note">The three load-bearing layers. Modular shell config, Starship setup, multiplexer with one-keystroke pane layouts. Common pitfalls.</div>
+        <div class="fo-entry__meta"><span class="tag tag--key">Foundation</span></div>
+      </div>
+      <div class="fo-entry">
+        <div class="fo-entry__num">03</div>
+        <div>
+          <div class="fo-entry__title"><a href="https://github.com/LoFiGamerGuy/cross-platform-ai-dev-env-playbook/blob/main/playbook/03-modern-unix-tools.md">Modern Unix Tools</a></div>
+          <div class="fo-entry__bibl">rg · fd · bat · eza · fzf · zoxide · atuin</div>
+        </div>
+        <div class="fo-entry__note">The rust-rewritten classics. Why they matter for agent-friendly output. Per-platform install. fzf-based widget patterns. Anti-patterns.</div>
+        <div class="fo-entry__meta"><span class="tag">Tooling</span></div>
+      </div>
+      <div class="fo-entry">
+        <div class="fo-entry__num">04</div>
+        <div>
+          <div class="fo-entry__title"><a href="https://github.com/LoFiGamerGuy/cross-platform-ai-dev-env-playbook/blob/main/playbook/04-runtime-version-management.md">Runtime Version Management</a></div>
+          <div class="fo-entry__bibl">mise · uv · rustup</div>
+        </div>
+        <div class="fo-entry__note">One tool for Python, Node, Go, Ruby, Java versions. Plus uv for Python packages and rustup for Rust. Per-project .mise.toml pinning. Common pitfalls.</div>
+        <div class="fo-entry__meta"><span class="tag">Tooling</span></div>
+      </div>
+      <div class="fo-entry">
+        <div class="fo-entry__num">05</div>
+        <div>
+          <div class="fo-entry__title"><a href="https://github.com/LoFiGamerGuy/cross-platform-ai-dev-env-playbook/blob/main/playbook/05-cross-platform-parity.md">Cross-Platform Parity</a></div>
+          <div class="fo-entry__bibl">The discipline that prevents drift</div>
+        </div>
+        <div class="fo-entry__note">Where parity breaks: line endings, paths, fonts, shells, default tools, notifications, cloud CLIs. Each with the failure mode and the fix. The pragmatic test for "is my parity good?"</div>
+        <div class="fo-entry__meta"><span class="tag tag--key">Load-bearing</span></div>
+      </div>
+      <div class="fo-entry">
+        <div class="fo-entry__num">06</div>
+        <div>
+          <div class="fo-entry__title"><a href="https://github.com/LoFiGamerGuy/cross-platform-ai-dev-env-playbook/blob/main/playbook/06-wsl-specific.md">WSL-Specific</a></div>
+          <div class="fo-entry__bibl">Windows + Linux on one machine</div>
+        </div>
+        <div class="fo-entry__note">WSL2 setup, the two-filesystem rule, tooling that bridges Windows ↔ WSL, GPU passthrough for local LLMs, common pitfalls.</div>
+        <div class="fo-entry__meta"><span class="tag">Platform</span></div>
+      </div>
+      <div class="fo-entry">
+        <div class="fo-entry__num">07</div>
+        <div>
+          <div class="fo-entry__title"><a href="https://github.com/LoFiGamerGuy/cross-platform-ai-dev-env-playbook/blob/main/playbook/07-ai-tooling-layer.md">AI Tooling Layer</a></div>
+          <div class="fo-entry__bibl">Claude Code · Cursor · MCP servers · local models</div>
+        </div>
+        <div class="fo-entry__note">The four layers (project context → harness → MCP → local runtime). What to install, how to wire it together. Anti-patterns.</div>
+        <div class="fo-entry__meta"><span class="tag">AI layer</span></div>
+      </div>
+      <div class="fo-entry">
+        <div class="fo-entry__num">08</div>
+        <div>
+          <div class="fo-entry__title"><a href="https://github.com/LoFiGamerGuy/cross-platform-ai-dev-env-playbook/blob/main/playbook/08-dotfiles-pattern.md">Dotfiles Pattern</a></div>
+          <div class="fo-entry__bibl">Idempotent installer · git-tracked configs</div>
+        </div>
+        <div class="fo-entry__note">Repo structure, idempotent installer, local overrides, public vs private dotfiles, adoption rhythm. The single most important parity tool.</div>
+        <div class="fo-entry__meta"><span class="tag tag--key">High leverage</span></div>
+      </div>
+      <div class="fo-entry">
+        <div class="fo-entry__num">09</div>
+        <div>
+          <div class="fo-entry__title"><a href="https://github.com/LoFiGamerGuy/cross-platform-ai-dev-env-playbook/blob/main/playbook/09-troubleshooting.md">Troubleshooting</a></div>
+          <div class="fo-entry__bibl">Common failure modes · diagnostic commands</div>
+        </div>
+        <div class="fo-entry__note">Slow shell startup, command not found, mise versions not activating, line ending issues, SSH failures, ANTHROPIC_API_KEY 401, WSL slowness, font glyphs missing — each with diagnosis + fix.</div>
+        <div class="fo-entry__meta"><span class="tag">Reference</span></div>
+      </div>
+    </section>
+
+    <!-- Checklists -->
+    <section class="fo-shelf">
+      <div class="fo-shelf__head">
+        <div class="fo-shelf__num">— II</div>
+        <h3 class="fo-shelf__title">Checklists <em>— operational sequences</em></h3>
+      </div>
+      <p class="fo-shelf__intro">Step-by-step lists for the recurring operational moments.</p>
+
+      <div class="fo-entry">
+        <div class="fo-entry__num">II.1</div>
+        <div>
+          <div class="fo-entry__title"><a href="https://github.com/LoFiGamerGuy/cross-platform-ai-dev-env-playbook/blob/main/checklists/fresh-machine-setup.md">Fresh Machine Setup</a></div>
+          <div class="fo-entry__bibl">Brand-new laptop or VM</div>
+        </div>
+        <div class="fo-entry__note">8-phase sequence: foundation → dotfiles clone → modern Unix tooling → runtime mgmt → AI tooling → project setup → verify → hardening. ~2 hours total.</div>
+        <div class="fo-entry__meta"><span class="tag tag--key">Operational</span></div>
+      </div>
+      <div class="fo-entry">
+        <div class="fo-entry__num">II.2</div>
+        <div>
+          <div class="fo-entry__title"><a href="https://github.com/LoFiGamerGuy/cross-platform-ai-dev-env-playbook/blob/main/checklists/parity-audit.md">Parity Audit</a></div>
+          <div class="fo-entry__bibl">Bi-annual drift detection</div>
+        </div>
+        <div class="fo-entry__note">Setup parity, config parity, behavior parity, cross-platform behavior, agent-specific parity, documentation parity. Each with acceptance criteria.</div>
+        <div class="fo-entry__meta"><span class="tag">Operational</span></div>
+      </div>
+      <div class="fo-entry">
+        <div class="fo-entry__num">II.3</div>
+        <div>
+          <div class="fo-entry__title"><a href="https://github.com/LoFiGamerGuy/cross-platform-ai-dev-env-playbook/blob/main/checklists/agent-readiness.md">Agent Readiness</a></div>
+          <div class="fo-entry__bibl">Pre-session check</div>
+        </div>
+        <div class="fo-entry__note">Project-level setup, MCP/tool access, repository hygiene, verification, boundaries, observability, resume/continuity. Anti-readiness signs that mean stop.</div>
+        <div class="fo-entry__meta"><span class="tag">Operational</span></div>
+      </div>
+    </section>
+
+    <!-- Examples -->
+    <section class="fo-shelf">
+      <div class="fo-shelf__head">
+        <div class="fo-shelf__num">— III</div>
+        <h3 class="fo-shelf__title">Reference Configs <em>— copy-pasteable starting points</em></h3>
+      </div>
+      <p class="fo-shelf__intro">Working configs for the load-bearing layers. Tweak to taste; the structure is what matters.</p>
+
+      <div class="fo-entry">
+        <div class="fo-entry__num">III.1</div>
+        <div>
+          <div class="fo-entry__title"><a href="https://github.com/LoFiGamerGuy/cross-platform-ai-dev-env-playbook/blob/main/examples/starship.toml">starship.toml</a></div>
+          <div class="fo-entry__bibl">Cross-platform prompt config</div>
+        </div>
+        <div class="fo-entry__note">Working Starship config: directory + git + runtime versions + cloud context. Tuned to show what matters and skip what doesn't.</div>
+        <div class="fo-entry__meta"><span class="tag">Config</span></div>
+      </div>
+      <div class="fo-entry">
+        <div class="fo-entry__num">III.2</div>
+        <div>
+          <div class="fo-entry__title"><a href="https://github.com/LoFiGamerGuy/cross-platform-ai-dev-env-playbook/blob/main/examples/tmux.conf">tmux.conf</a></div>
+          <div class="fo-entry__bibl">Multiplexer config with quad-pane macro</div>
+        </div>
+        <div class="fo-entry__note">Working tmux config: Ctrl-a prefix, mouse mode on, vi-style copy mode, one-keystroke pane layouts (Q for 2x2 quad).</div>
+        <div class="fo-entry__meta"><span class="tag">Config</span></div>
+      </div>
+      <div class="fo-entry">
+        <div class="fo-entry__num">III.3</div>
+        <div>
+          <div class="fo-entry__title"><a href="https://github.com/LoFiGamerGuy/cross-platform-ai-dev-env-playbook/blob/main/examples/mise.toml">mise.toml</a></div>
+          <div class="fo-entry__bibl">Reference per-project runtime config</div>
+        </div>
+        <div class="fo-entry__note">Pinned tools, per-project env vars, optional task definitions. Drop at project root; mise activates on cd.</div>
+        <div class="fo-entry__meta"><span class="tag">Config</span></div>
+      </div>
+      <div class="fo-entry">
+        <div class="fo-entry__num">III.4</div>
+        <div>
+          <div class="fo-entry__title"><a href="https://github.com/LoFiGamerGuy/cross-platform-ai-dev-env-playbook/blob/main/examples/install.sh">install.sh</a></div>
+          <div class="fo-entry__bibl">Idempotent dotfiles installer skeleton</div>
+        </div>
+        <div class="fo-entry__note">Detects platform (macOS / Linux / WSL / Windows), installs packages, symlinks configs, runs runtime managers, runs platform-specific post-install. Safe to re-run.</div>
+        <div class="fo-entry__meta"><span class="tag tag--key">Foundation</span></div>
+      </div>
+    </section>
+
+    <!-- Feedback -->
+    <section class="fo-feedback">
+      <div class="fo-feedback__head">
+        <div class="fo-feedback__cap">— for non-github readers</div>
+        <h3>Send a quick note.</h3>
+        <p>Used the playbook to set up your own environment? Hit a gap or a platform-specific failure? Have a war story? This form goes straight to the maintainer.</p>
+        <p>If you have a GitHub account, <a href="https://github.com/LoFiGamerGuy/cross-platform-ai-dev-env-playbook/issues/new">opening an issue</a> is preferred. This form is the path for everyone else.</p>
+      </div>
+      <form action="https://formspree.io/f/xnjwzzew" method="POST">
+        <div>
+          <label for="fb-name">Your name (optional)</label>
+          <input id="fb-name" type="text" name="name">
+        </div>
+        <div>
+          <label for="fb-email">Your email (optional, for reply)</label>
+          <input id="fb-email" type="email" name="email">
+        </div>
+        <input type="hidden" name="_subject" value="Cross-Platform AI Dev Env Playbook — feedback">
+        <div>
+          <label for="fb-message">Message</label>
+          <textarea id="fb-message" name="message" required></textarea>
+        </div>
+        <button type="submit">Send →</button>
+      </form>
+    </section>
+
+    <footer class="fo-colophon">
+      <div>
+        <h5>About</h5>
+        <p>Written by Ryan Gosnell. The concrete operational counterpart to sections 02 and 08 of share-ai-engineering-patterns. Distilled from setting up many machines across Mac, Linux, Windows+WSL, and cloud VMs.</p>
+        <p style="margin-top: var(--space-3);">Source on GitHub. <a href="https://github.com/LoFiGamerGuy/cross-platform-ai-dev-env-playbook">Repo README →</a></p>
+        <p style="margin-top: var(--space-3);"><b>Related public repos:</b></p>
+        <ul style="margin-top: var(--space-2);">
+          <li><a href="https://lofigamerguy.github.io/share-ai-engineering-patterns/">share-ai-engineering-patterns</a></li>
+          <li><a href="https://lofigamerguy.github.io/council-of-five/">council-of-five</a></li>
+          <li><a href="https://lofigamerguy.github.io/reference-library-methodology/">reference-library-methodology</a></li>
+          <li><a href="https://lofigamerguy.github.io/alpha-reader-toolkit/">alpha-reader-toolkit</a></li>
+          <li><a href="https://lofigamerguy.github.io/five-register-design-system/">five-register-design-system</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>License</h5>
+        <p><a href="https://github.com/LoFiGamerGuy/cross-platform-ai-dev-env-playbook/blob/main/LICENSE">CC BY 4.0</a> — share, adapt, build on; just credit the source.</p>
+      </div>
+      <div>
+        <h5>Quick links</h5>
+        <ul>
+          <li><a href="https://github.com/LoFiGamerGuy/cross-platform-ai-dev-env-playbook/blob/main/README.md">README</a> <b>MD</b></li>
+          <li><a href="https://github.com/LoFiGamerGuy/cross-platform-ai-dev-env-playbook/blob/main/CONTRIBUTING.md">Contributing</a> <b>MD</b></li>
+          <li><a href="https://github.com/LoFiGamerGuy/cross-platform-ai-dev-env-playbook/blob/main/CHANGELOG.md">Changelog</a> <b>MD</b></li>
+          <li><a href="https://github.com/LoFiGamerGuy/terminal-stack">terminal-stack</a> <b>SIBLING</b></li>
+          <li><a href="https://github.com/LoFiGamerGuy/dotfiles">dotfiles</a> <b>SIBLING</b></li>
+        </ul>
+      </div>
+    </footer>
+
+  </main>
+
+</div>
+
+</body>
+</html>
